@@ -1,7 +1,15 @@
 const express=require('express');
+require('./DB/config')
+
+const User=require('./DB/User');
 const app=express();
-const mongoose=require('mongoose')
-app.get('/',(req,resp)=>{
-    resp.send(" i am back")
+
+
+app.use(express.json());
+
+app.post('/signin', async(req,resp)=>{
+    const user= new User(req.body);
+    const data=await user.save();
+    
 });
 app.listen(5000);
