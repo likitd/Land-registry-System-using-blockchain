@@ -13,11 +13,18 @@ app.use(express.json());
 app.use(cors());
 
 //sign up page
-app.post('/signin', async(req,resp)=>{
-    const user= new User(req.body);
-    const data=await user.save();
-
-    
+// app.post('/signin', async(req,resp)=>{
+//     const user= new User(req.body);
+//     const data=await user.save();
+// });
+app.post('/signin', async (req, resp) => {
+    try {
+        const user = new User(req.body); // Saves all fields: name, email, adhar_no, age, password
+        const data = await user.save();
+        resp.status(201).json({ message: 'Sign-up successful', user: data });
+    } catch (error) {
+        resp.status(500).json({ error: 'An error occurred during sign-up' });
+    }
 });
 
 
@@ -50,7 +57,7 @@ app.get('/make_transfer', async(req,resp)=>{
     const land=await Transfer.find({});
     resp.send(land);
 })
-app.delete('/make_convention/:SurveyNo/:HissNo',async (req,resp)=>{
+app.delete('/make_transfer/:SurveyNo/:HissNo',async (req,resp)=>{
     const SurveyNo=parseInt(req.params.SurveyNo,10);
     const {HissNo}=req.params;
     const  land=await Transfer.findOneAndDelete({SurveyNo,HissNo});
