@@ -14,7 +14,7 @@ const Nav=()=>{
                 <li><Link to='/userpage'>userpage</Link></li>
                 <li><Link to='/make_convention'>make_convention</Link></li>
                 <li><Link to='/make_transfer'>make_transfer</Link></li>
-
+                <li><Link to='/landofficer'>land officer</Link></li>
                 
                 </ul>
                

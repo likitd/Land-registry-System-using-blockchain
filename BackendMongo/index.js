@@ -28,40 +28,124 @@ app.post('/signin', async (req, resp) => {
 });
 
 
-//store conventional request in mongodb
-app.post('/userpage',async(req,resp)=>{
-    const land=new Convention(req.body);
-    const data=await land.save();
+
+
+
+// Store either conventional or transfer request in MongoDB
+app.post('/userpage', async (req, resp) => {
+    try {
+        if (req.body.requestType === 'conventional') {
+            // Handle ConventionalReq
+            const conventionalRequest = new Convention(req.body);
+            const data = await conventionalRequest.save();
+            resp.status(201).json({ message: 'Conventional request saved successfully', data });
+        } else if (req.body.requestType === 'transfer') {
+            // Handle TransferReq
+            const transferRequest = new Transfer(req.body);
+            const data = await transferRequest.save();
+            resp.status(201).json({ message: 'Transfer request saved successfully', data });
+        } else {
+            resp.status(400).json({ error: 'Invalid request type' });
+        }
+    } catch (error) {
+        resp.status(500).json({ error: 'Failed to save request' });
+    }
 });
-app.get('/make_convention', async(req,resp)=>{
-    const land=await Convention.find({});
-    resp.send(land);
-})
-app.delete('/make_convention/:SurveyNo/:HissNo',async (req,resp)=>{
-    const SurveyNo=parseInt(req.params.SurveyNo,10);
-    const {HissNo}=req.params;
-    const  land=await Convention.findOneAndDelete({SurveyNo,HissNo});
+
+
+
+
+
+
+//store conventional request in mongodb
+// app.post('/userpage',async(req,resp)=>{
+//     const land=new Convention(req.body);
+//     const data=await land.save();
+// });
+// app.get('/make_convention', async(req,resp)=>{
+//     const land=await Convention.find({});
+//     resp.send(land);
+// })
+// app.delete('/make_convention/:SurveyNo/:HissNo',async (req,resp)=>{
+//     const SurveyNo=parseInt(req.params.SurveyNo,10);
+//     const {HissNo}=req.params;
+//     const  land=await Convention.findOneAndDelete({SurveyNo,HissNo});
    
-})
+// })
+
+app.get('/make_convention', async (req, resp) => {
+    try {
+        const land = await Convention.find({});
+        resp.status(200).json(land);
+    } catch (error) {
+        resp.status(500).json({ error: 'Failed to fetch conventional requests' });
+    }
+});
+
+// Delete a conventional request by SurveyNo and HissNo
+app.delete('/make_convention/:SurveyNo/:HissNo', async (req, resp) => {
+    try {
+        const SurveyNo = parseInt(req.params.SurveyNo, 10);
+        const { HissNo } = req.params;
+        const land = await Convention.findOneAndDelete({ SurveyNo, HissNo });
+        
+        if (land) {
+            resp.status(200).json({ message: 'Request deleted successfully' });
+        } else {
+            resp.status(404).json({ error: 'Request not found' });
+        }
+    } catch (error) {
+        resp.status(500).json({ error: 'Failed to delete conventional request' });
+    }
+});
+
 
 
 
 
 
 //store transfer request in mongodb
-app.post('/userpage',async(req,resp)=>{
-    const land=new Transfer(req.body);
-    const data=await land.save();
-})
-app.get('/make_transfer', async(req,resp)=>{
-    const land=await Transfer.find({});
-    resp.send(land);
-})
-app.delete('/make_transfer/:SurveyNo/:HissNo',async (req,resp)=>{
-    const SurveyNo=parseInt(req.params.SurveyNo,10);
-    const {HissNo}=req.params;
-    const  land=await Transfer.findOneAndDelete({SurveyNo,HissNo});
+// app.post('/userpage',async(req,resp)=>{
+//     const land=new Transfer(req.body);
+//     const data=await land.save();
+// })
+// app.get('/make_transfer', async(req,resp)=>{
+//     const land=await Transfer.find({});
+//     resp.send(land);
+// })
+// app.delete('/make_transfer/:SurveyNo/:HissNo',async (req,resp)=>{
+//     const SurveyNo=parseInt(req.params.SurveyNo,10);
+//     const {HissNo}=req.params;
+//     const  land=await Transfer.findOneAndDelete({SurveyNo,HissNo});
    
-})
+// })
+
+
+// Get all transfer requests
+app.get('/make_transfer', async (req, resp) => {
+    try {
+        const land = await Transfer.find({});
+        resp.status(200).json(land);
+    } catch (error) {
+        resp.status(500).json({ error: 'Failed to fetch transfer requests' });
+    }
+});
+
+// Delete a transfer request by SurveyNo and HissNo
+app.delete('/make_transfer/:SurveyNo/:HissNo', async (req, resp) => {
+    try {
+        const SurveyNo = parseInt(req.params.SurveyNo, 10);
+        const { HissNo } = req.params;
+        const land = await Transfer.findOneAndDelete({ SurveyNo, HissNo });
+        
+        if (land) {
+            resp.status(200).json({ message: 'Transfer request deleted successfully' });
+        } else {
+            resp.status(404).json({ error: 'Transfer request not found' });
+        }
+    } catch (error) {
+        resp.status(500).json({ error: 'Failed to delete transfer request' });
+    }
+});
 
 app.listen(5000);
