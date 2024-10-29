@@ -23,52 +23,50 @@ const MakeTransfer = () => {
     }
   };
 
-  // Function to handle accept action
-  const handleAccept = async (owner_adhar,buyer_adhar,surveyNo, hissNo) => {
-
-
-    if (!window.ethereum) {
+ // Function to handle accept action
+const handleAccept = async (owner_adhar, buyer_adhar, surveyNo, hissNo) => {
+  if (!window.ethereum) {
       alert("Please install MetaMask");
       return;
-    }
-    const {ethereum}=window;
-    const provider=new ethers.BrowserProvider(ethereum);
-    const signer= await provider.getSigner();
-    const contractInstance=new ethers.Contract(
+  }
+  const { ethereum } = window;
+  const provider = new ethers.BrowserProvider(ethereum);
+  const signer = await provider.getSigner();
+  const contractInstance = new ethers.Contract(
       contractAddress,
       contractABI,
       signer
-      );
+  );
 
-    
-    try {
-      const status=await  contractInstance.transfer_land(
-        owner_adhar,buyer_adhar,surveyNo,hissNo
+  try {
+      const status = await contractInstance.transfer_land(
+          owner_adhar, buyer_adhar, surveyNo, hissNo
       );
-     
-      alert("transfer successfully to the blockchain!");
-    } catch (error) {
+      alert("Transfer successfully to the blockchain!");
+  } catch (error) {
       console.error("Error adding land to the blockchain:", error);
-      alert("Failed to tarnsfer land to the blockchain.");
-    }
+      alert("Failed to transfer land to the blockchain.");
+  }
 
-    try {
-      // Add any additional logic specific to the accept action here
+  try {
       console.log("Accepting request for Survey No:", surveyNo, "Hiss No:", hissNo);
-      
-      // Delete the accepted item from the backend
+
+      // Delete the accepted item from the backend transfer requests database
       await axios.delete(`http://localhost:5000/make_transfer/${surveyNo}/${hissNo}`);
       
+      // Delete the land entry from the landforsale database
+      await axios.delete(`http://localhost:5000/landforsale/${surveyNo}/${hissNo}`);
+
       // Update the UI after deletion
-      setTransferRequests(prevRequests => 
-        prevRequests.filter(request => request.SurveyNo !== surveyNo || request.HissNo !== hissNo)
+      setTransferRequests(prevRequests =>
+          prevRequests.filter(request => request.SurveyNo !== surveyNo || request.HissNo !== hissNo)
       );
-      alert("Request accepted and deleted successfully");
-    } catch (error) {
+      alert("Request accepted, and land sale entry deleted successfully");
+  } catch (error) {
       console.error("Error accepting transfer request:", error);
       alert("Failed to accept the request");
-    }
-  };
+  }
+};
 
   // Function to handle reject action
   const handleReject = async (surveyNo, hissNo) => {

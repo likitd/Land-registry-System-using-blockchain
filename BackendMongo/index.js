@@ -7,6 +7,7 @@ const Convention=require('./DB/ConventionalReq');
 
 const Transfer=require('./DB/TransferReq');
 const app=express();
+const LandForSale=require('./DB/LandSale')
 
 const cors=require('cors');
 app.use(express.json());
@@ -168,5 +169,54 @@ app.delete('/make_transfer/:SurveyNo/:HissNo', async (req, resp) => {
         resp.status(500).json({ error: 'Failed to delete transfer request' });
     }
 });
+
+
+
+// app.get('/landforsale', async(req,resp)=>{
+//     const land=await Transfer.find({});
+//     resp.send(land);
+// })
+
+
+
+
+app.post('/landforsale', async (req, res) => {
+    const { SurveyNo, HissNo, area, conventional, pincode, name, email, price } = req.body;
+    try {
+        const landSaleEntry = new LandForSale({ SurveyNo, HissNo, area, conventional, pincode, name, email, price });
+        await landSaleEntry.save();
+        res.status(201).json({ message: "Land added for sale" });
+    } catch (error) {
+        res.status(500).json({ message: "Error adding land for sale" });
+    }
+});
+
+// Get all lands for sale
+app.get('/landforsale', async (req, res) => {
+    try {
+        const landsForSale = await LandForSale.find({});
+        res.json(landsForSale);
+    } catch (error) {
+        res.status(500).json({ message: "Error fetching land sale records" });
+    }
+});
+
+
+// Delete land for sale by SurveyNo and HissNo
+app.delete('/landforsale/:surveyNo/:hissNo', async (req, res) => {
+    const { surveyNo, hissNo } = req.params;
+    try {
+        await LandForSale.deleteOne({ SurveyNo: surveyNo, HissNo: hissNo });
+        res.json({ message: 'Land for sale entry deleted successfully' });
+    } catch (error) {
+        res.status(500).json({ message: 'Error deleting land for sale entry' });
+    }
+});
+
+
+
+
+
+
 
 app.listen(5000);

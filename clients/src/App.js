@@ -8,6 +8,7 @@ import MakeTransfer from './Components/MakeTransfer';
 import LandOfficer from './Components/LandOfficer';
 import Login from './Components/Login';
 import Logout from './Components/Logout';
+import LandForSale from './Components/LandForSale';
 function App() {
   return (
     <div className="App"><BrowserRouter>
@@ -22,6 +23,8 @@ function App() {
     <Route path='/make_convention' element={<MakeConvention/>}/>
     <Route path='/make_transfer' element={<MakeTransfer/>}/>
     <Route path='/landofficer' element={<LandOfficer/>}/>
+    <Route path='/make_transfer' element={<MakeTransfer/>}/>
+    <Route path='/landforsale' element={<LandForSale/>}/>
     </Routes>
     
     </BrowserRouter>
