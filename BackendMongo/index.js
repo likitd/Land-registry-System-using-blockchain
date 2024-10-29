@@ -73,6 +73,27 @@ app.post('/userpage', async (req, resp) => {
    
 // })
 
+
+
+app.post('/login', async (req, resp) => {
+    const { adhar_no, password } = req.body;
+    try {
+        const user = await User.findOne({ adhar_no, password });
+        if (user) {
+            resp.status(200).json({ message: 'Login successful', user });
+        } else {
+            resp.status(401).json({ message: 'Invalid Aadhaar or password' });
+        }
+    } catch (error) {
+        resp.status(500).json({ error: 'Login failed due to an error' });
+    }
+});
+
+
+
+
+
+
 app.get('/make_convention', async (req, resp) => {
     try {
         const land = await Convention.find({});

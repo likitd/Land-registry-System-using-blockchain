@@ -24,7 +24,7 @@ const MakeTransfer = () => {
   };
 
   // Function to handle accept action
-  const handleAccept = async (surveyNo, hissNo) => {
+  const handleAccept = async (owner_adhar,buyer_adhar,surveyNo, hissNo) => {
 
 
     if (!window.ethereum) {
@@ -39,11 +39,11 @@ const MakeTransfer = () => {
       contractABI,
       signer
       );
- //   const { owner_adhar, SurveyNo, HissNo, area, conventional, pincode } = formData;
+
     
     try {
       const status=await  contractInstance.transfer_land(
-        surveyNo,hissNo
+        owner_adhar,buyer_adhar,surveyNo,hissNo
       );
      
       alert("transfer successfully to the blockchain!");
@@ -118,7 +118,7 @@ const MakeTransfer = () => {
                 <td>{request.conventional ? "Yes" : "No"}</td>
                 <td>{request.pincode}</td>
                 <td>
-                  <button onClick={() => handleAccept(request.SurveyNo, request.HissNo)}>Accept</button>
+                  <button onClick={() => handleAccept(request.owner_adhar,request.buyer_adhar,request.SurveyNo, request.HissNo)}>Accept</button>
                   <button onClick={() => handleReject(request.SurveyNo, request.HissNo)}>Reject</button>
                 </td>
               </tr>

@@ -1,115 +1,151 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
+import { ethers } from 'ethers';
+import contractabi from './utils/Land.json';
 
-function UserPage() {
-  // State for conventional request form
-  const [conventionalData, setConventionalData] = useState({
-    requestType: 'conventional',
-    owner_adhar: '',
-    SurveyNo: '',
-    HissNo: '',
-    area: '',
-    conventional: false,
-    pincode: ''
-  });
+const contractABI = contractabi.abi;
+const contractAddress = "0x81176a09B1fA497Eea08D295DA56139B17Df9a5F";
 
-  // State for transfer request form
-  const [transferData, setTransferData] = useState({
-    requestType: 'transfer',
-    owner_adhar: '',
-    buyer_adhar: '',
-    SurveyNo: '',
-    HissNo: '',
-    area: '',
-    conventional: false,
-    pincode: ''
-  });
+const UserPage = () => {
+    const [user, setUser] = useState(null);
+    const [landDetails, setLandDetails] = useState([]);
+    const navigate = useNavigate();
 
-  // Handle changes for conventional form inputs
-  const handleConventionalChange = (e) => {
-    const { name, value, type, checked } = e.target;
-    setConventionalData({
-      ...conventionalData,
-      [name]: type === 'checkbox' ? checked : value
-    });
-  };
+    useEffect(() => {
+        const storedUser = JSON.parse(localStorage.getItem('user'));
+        if (storedUser) {
+            setUser(storedUser);
+        } else {
+            navigate('/'); // Redirect to login if no user is logged in
+        }
+    }, [navigate]);
 
-  // Handle changes for transfer form inputs
-  const handleTransferChange = (e) => {
-    const { name, value, type, checked } = e.target;
-    setTransferData({
-      ...transferData,
-      [name]: type === 'checkbox' ? checked : value
-    });
-  };
+    useEffect(() => {
+        if (user) {
+            fetchLandDetails(user.adhar_no);
+        }
+    }, [user]);
 
-  // Submit conventional request
-  const submitConventional = async (e) => {
-    e.preventDefault();
-    try {
-      await axios.post('http://localhost:5000/userpage', conventionalData);
-      alert('Conventional request submitted successfully');
-      setConventionalData({
-        requestType: 'conventional',
-        owner_adhar: '',
-        SurveyNo: '',
-        HissNo: '',
-        area: '',
-        conventional: false,
-        pincode: ''
-      });
-    } catch (error) {
-      console.error('Error submitting conventional request', error);
-    }
-  };
+    const fetchLandDetails = async (adharNumber) => {
+        try {
+            const { ethereum } = window;
+            const provider = new ethers.BrowserProvider(ethereum);
+            const signer = await provider.getSigner();
+            const contractInstance = new ethers.Contract(
+                contractAddress,
+                contractABI,
+                signer
+            );
 
-  // Submit transfer request
-  const submitTransfer = async (e) => {
-    e.preventDefault();
-    try {
-      await axios.post('http://localhost:5000/userpage', transferData);
-      alert('Transfer request submitted successfully');
-      setTransferData({
-        requestType: 'transfer',
-        owner_adhar: '',
-        buyer_adhar: '',
-        SurveyNo: '',
-        HissNo: '',
-        area: '',
-        conventional: false,
-        pincode: ''
-      });
-    } catch (error) {
-      console.error('Error submitting transfer request', error);
-    }
-  };
+            const result = await contractInstance.display_land_of_user(adharNumber);
 
-  return (
-    <div>
-      <h2>Conventional Request</h2>
-      <form onSubmit={submitConventional}>
-        <input type="number" name="owner_adhar" value={conventionalData.owner_adhar} onChange={handleConventionalChange} placeholder="Owner Adhar" required />
-        <input type="number" name="SurveyNo" value={conventionalData.SurveyNo} onChange={handleConventionalChange} placeholder="Survey Number" required />
-        <input type="text" name="HissNo" value={conventionalData.HissNo} onChange={handleConventionalChange} placeholder="Hiss Number" required />
-        <input type="number" name="area" value={conventionalData.area} onChange={handleConventionalChange} placeholder="Area" required />
-        <input type="checkbox" name="conventional" checked={conventionalData.conventional} onChange={handleConventionalChange} /> Conventional
-        <input type="number" name="pincode" value={conventionalData.pincode} onChange={handleConventionalChange} placeholder="Pincode" required />
-        <button type="submit">Submit Conventional Request</button>
-      </form>
+            const formattedLandDetails = result.map(land => ({
+                owner_adhar: parseInt(land[0].toString()),
+                land_id: parseInt(land[1].toString()),
+                SurveyNo: parseInt(land[2].toString()),
+                HissNo: land[3],
+                area: parseInt(land[4].toString()),
+                conventional: land[5],
+                pincode: parseInt(land[6].toString())
+            }));
 
-      <h2>Transfer Request</h2>
-      <form onSubmit={submitTransfer}>
-        <input type="number" name="owner_adhar" value={transferData.owner_adhar} onChange={handleTransferChange} placeholder="Owner Adhar" required />
-        <input type="number" name="buyer_adhar" value={transferData.buyer_adhar} onChange={handleTransferChange} placeholder="Buyer Adhar" required />
-        <input type="number" name="SurveyNo" value={transferData.SurveyNo} onChange={handleTransferChange} placeholder="Survey Number" required />
-        <input type="text" name="HissNo" value={transferData.HissNo} onChange={handleTransferChange} placeholder="Hiss Number" required />
-        <input type="number" name="area" value={transferData.area} onChange={handleTransferChange} placeholder="Area" required />
-        <input type="checkbox" name="conventional" checked={transferData.conventional} onChange={handleTransferChange} /> Conventional
-        <input type="number" name="pincode" value={transferData.pincode} onChange={handleTransferChange} placeholder="Pincode" required />
-        <button type="submit">Submit Transfer Request</button>
-      </form>
-    </div>
-  );
-}
+            setLandDetails(formattedLandDetails);
+        } catch (error) {
+            console.error("Error fetching land details:", error);
+        }
+    };
+
+    const submitConventionalRequest = async (land) => {
+        const conventionalData = {
+            requestType: 'conventional',
+            owner_adhar: land.owner_adhar,
+            SurveyNo: land.SurveyNo,
+            HissNo: land.HissNo,
+            area: land.area,
+            conventional: true,
+            pincode: land.pincode
+        };
+
+        try {
+            await axios.post('http://localhost:5000/userpage', conventionalData);
+            alert('Conventional request submitted successfully');
+        } catch (error) {
+            console.error('Error submitting conventional request', error);
+        }
+    };
+
+    const submitTransferRequest = async (land) => {
+        const transferData = {
+            requestType: 'transfer',
+            owner_adhar: land.owner_adhar,
+            buyer_adhar: prompt("Enter buyer's Aadhaar number"),
+            SurveyNo: land.SurveyNo,
+            HissNo: land.HissNo,
+            area: land.area,
+            conventional: land.conventional,
+            pincode: land.pincode
+        };
+
+        if (!transferData.buyer_adhar) {
+            alert("Transfer request canceled.");
+            return;
+        }
+
+        try {
+            await axios.post('http://localhost:5000/userpage', transferData);
+            alert('Transfer request submitted successfully');
+        } catch (error) {
+            console.error('Error submitting transfer request', error);
+        }
+    };
+
+    if (!user) return null;
+
+    return (
+        <div>
+            <h2>Welcome, {user.name}</h2>
+            <p>Aadhaar Number: {user.adhar_no}</p>
+
+            {landDetails.length > 0 && (
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Owner Aadhaar</th>
+                            <th>Land ID</th>
+                            <th>Survey No</th>
+                            <th>Hiss No</th>
+                            <th>Area</th>
+                            <th>Conventional</th>
+                            <th>Pincode</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {landDetails.map((land, index) => (
+                            <tr key={index}>
+                                <td>{land.owner_adhar}</td>
+                                <td>{land.land_id}</td>
+                                <td>{land.SurveyNo}</td>
+                                <td>{land.HissNo}</td>
+                                <td>{land.area}</td>
+                                <td>{land.conventional ? "Yes" : "No"}</td>
+                                <td>{land.pincode}</td>
+                                <td>
+                                    <button onClick={() => submitTransferRequest(land)}>Transfer Request</button>
+                                    {land.conventional ? (
+                                        <span>Already Conventioned</span>
+                                    ) : (
+                                        <button onClick={() => submitConventionalRequest(land)}>Conventional Request</button>
+                                    )}
+                                </td>
+                            </tr>
+                        ))}
+                    </tbody>
+                </table>
+            )}
+        </div>
+    );
+};
 
 export default UserPage;

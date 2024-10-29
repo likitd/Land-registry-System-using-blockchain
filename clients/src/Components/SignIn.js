@@ -29,7 +29,7 @@ const SignIn = () => {
             const data = await response.json();
             if (response.ok) {
                 console.log('Sign up successful:', data);
-                navigate('/userpage'); // Redirect to user page on successful sign-up
+                navigate('/login'); // Redirect to user page on successful sign-up
             } else {
                 alert(data.message || 'Sign-up failed');
             }
