@@ -21,7 +21,7 @@ function App() {
     </Routes>
     
     </BrowserRouter>
-      <h1>Hi i made a mistake by joining this team</h1>
+    
     </div>
   );
 }
