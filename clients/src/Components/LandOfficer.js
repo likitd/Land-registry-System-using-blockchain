@@ -1,11 +1,12 @@
 // LandOfficer.js
-import React, { useState } from 'react';
+import React, { useState,useEffect} from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ethers } from 'ethers';
+import contractabi from './utils/Land.json'
 
-// Replace with your actual contract ABI and address
-const contractABI = "YOUR_CONTRACT_ABI"; // Add your contract ABI here
-const contractAddress = "YOUR_CONTRACT_ADDRESS"; // Add your deployed contract address here
+
+const contractABI = contractabi.abi // Add your contract ABI here
+const contractAddress = "0x81176a09B1fA497Eea08D295DA56139B17Df9a5F"; // Add your deployed contract address here
 
 const LandOfficer = () => {
   const [formData, setFormData] = useState({
@@ -15,6 +16,10 @@ const LandOfficer = () => {
     area: '',
     conventional: false,
     pincode: ''
+  });
+
+  useEffect(()=>{
+    requestAccount();
   });
 
   const navigate = useNavigate();
@@ -42,47 +47,60 @@ const LandOfficer = () => {
     }
   };
 
-  // Function to get the smart contract
-  // const getContract = () => {
-  //   const provider = new ethers.providers.Web3Provider(window.ethereum);
+  // // Function to get the smart contract with a signer
+  // const getContractWithSigner = async () => {
+  //   // Request MetaMask account access
+  //  // await requestAccount();
+
+  //   // Ensure provider is connected to MetaMask
+  //   const provider = new ethers.BrowserProvider(window.ethereum);
+    
+  //   // Get signer from provider
   //   const signer = provider.getSigner();
+    
+  //   // Return contract instance connected with the signer
   //   return new ethers.Contract(contractAddress, contractABI, signer);
   // };
 
-  // // Function to add land to the blockchain
-  // const addLand = async () => {
-  //   if (!window.ethereum) {
-  //     alert("Please install MetaMask");
-  //     return;
-  //   }
-
-  //   const { owner_adhar, SurveyNo, HissNo, area, conventional, pincode } = formData;
+  // Function to add land to the blockchain
+  const addLand = async () => {
+    if (!window.ethereum) {
+      alert("Please install MetaMask");
+      return;
+    }
+    const {ethereum}=window;
+    const provider=new ethers.BrowserProvider(ethereum);
+    const signer= await provider.getSigner();
+    const contractInstance=new ethers.Contract(
+      contractAddress,
+      contractABI,
+      signer
+      );
+    const { owner_adhar, SurveyNo, HissNo, area, conventional, pincode } = formData;
     
-  //   try {
-  //     await requestAccount();
-  //     const contract = getContract();
-  //     const transaction = await contract.add_land(
-  //       SurveyNo,
-  //       HissNo,
-  //       area,
-  //       conventional,
-  //       pincode,
-  //       owner_adhar
-  //     );
-  //     await transaction.wait();
-  //     alert("Land added successfully to the blockchain!");
-  //   } catch (error) {
-  //     console.error("Error adding land to the blockchain:", error);
-  //     alert("Failed to add land to the blockchain.");
-  //   }
-  // };
+    try {
+      const status=await  contractInstance.add_land(
+        SurveyNo,
+        HissNo,
+        area,
+        conventional,
+        pincode,
+        owner_adhar
+      );
+     
+      alert("Land added successfully to the blockchain!");
+    } catch (error) {
+      console.error("Error adding land to the blockchain:", error);
+      alert("Failed to add land to the blockchain.");
+    }
+  };
 
-  // // Handle form submission
+  // Handle form submission
   const handleSubmit = (e) => {
     e.preventDefault();
-   // addLand(); // Call the addLand function when form is submitted
+    addLand(); // Call the addLand function when form is submitted
   };
-  requestAccount();
+
   return (
     <div style={{ padding: "20px" }}>
       <h2>Add New Land</h2>
