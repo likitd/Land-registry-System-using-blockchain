@@ -21,7 +21,7 @@ const UserPage = () => {
             setUser(storedUser);
             fetchLandForSale();
         } else {
-            navigate('/'); 
+            navigate('/');
         }
     }, [navigate]);
 
@@ -65,6 +65,50 @@ const UserPage = () => {
         }
     };
 
+    const submitConventionalRequest = async (land) => {
+        const conventionalData = {
+            requestType: 'conventional',
+            owner_adhar: land.owner_adhar,
+            SurveyNo: land.SurveyNo,
+            HissNo: land.HissNo,
+            area: land.area,
+            conventional: true,
+            pincode: land.pincode
+        };
+
+        try {
+            await axios.post('http://localhost:5000/userpage', conventionalData);
+            alert('Conventional request submitted successfully');
+        } catch (error) {
+            console.error('Error submitting conventional request', error);
+        }
+    };
+
+    const submitTransferRequest = async (land) => {
+        const transferData = {
+            requestType: 'transfer',
+            owner_adhar: land.owner_adhar,
+            buyer_adhar: prompt("Enter buyer's Aadhaar number"),
+            SurveyNo: land.SurveyNo,
+            HissNo: land.HissNo,
+            area: land.area,
+            conventional: land.conventional,
+            pincode: land.pincode
+        };
+
+        if (!transferData.buyer_adhar) {
+            alert("Transfer request canceled.");
+            return;
+        }
+
+        try {
+            await axios.post('http://localhost:5000/userpage', transferData);
+            alert('Transfer request submitted successfully');
+        } catch (error) {
+            console.error('Error submitting transfer request', error);
+        }
+    };
+
     const submitLandForSale = async (land) => {
         const saleEntry = {
             SurveyNo: land.SurveyNo,
@@ -82,10 +126,9 @@ const UserPage = () => {
             alert('Land added for sale successfully');
             setSellingLandId(null);
             setSalePrice('');
-            fetchLandForSale(); 
+            fetchLandForSale();
         } catch (error) {
             console.error('Error adding land for sale:', error);
-            alert('Failed to add land for sale');
         }
     };
 
@@ -95,15 +138,14 @@ const UserPage = () => {
             alert('Sale request canceled successfully');
             fetchLandForSale();
         } catch (error) {
-            console.error('Error canceling sale request:', error);
-            alert('Failed to cancel sale request');
+            console.error('Error canceling sale request', error);
         }
     };
 
     const isLandForSale = (surveyNo, hissNo) =>
         landsForSale.some(land => land.SurveyNo === surveyNo && land.HissNo === hissNo);
 
-    if (!user) return <p>Loading...</p>; // Display loading if user data is not ready
+    if (!user) return <p>Loading...</p>;
 
     return (
         <div>
@@ -135,11 +177,17 @@ const UserPage = () => {
                                 <td>{land.conventional ? "Yes" : "No"}</td>
                                 <td>{land.pincode}</td>
                                 <td>
+                                    <button onClick={() => submitTransferRequest(land)}>Transfer Request</button>
+                                    {land.conventional ? (
+                                        <span>Already Conventioned</span>
+                                    ) : (
+                                        <button onClick={() => submitConventionalRequest(land)}>Conventional Request</button>
+                                    )}
                                     {isLandForSale(land.SurveyNo, land.HissNo) ? (
-                                        <button onClick={() => cancelLandForSale(land)}>Sale X</button>
+                                        <button onClick={() => cancelLandForSale(land)}>Cancel Sale</button>
                                     ) : (
                                         <>
-                                            <button onClick={() => setSellingLandId(land.land_id)}>Sell</button>
+                                            <button onClick={() => setSellingLandId(land.land_id)}>Want to Sell Your Land</button>
                                             {sellingLandId === land.land_id && (
                                                 <div>
                                                     <input
