@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { ethers } from 'ethers';
 import contractabi from './utils/Land.json';
+import './UserPage.css'; // Import the CSS file
 
 const contractABI = contractabi.abi;
 const contractAddress = "0x81176a09B1fA497Eea08D295DA56139B17Df9a5F";
@@ -148,12 +149,12 @@ const UserPage = () => {
     if (!user) return <p>Loading...</p>;
 
     return (
-        <div>
+        <div className="user-page">
             <h2>Welcome, {user.name}</h2>
             <p>Aadhaar Number: {user.adhar_no}</p>
 
             {landDetails.length > 0 && (
-                <table>
+                <table className="land-table">
                     <thead>
                         <tr>
                             <th>Owner Aadhaar</th>
@@ -177,19 +178,19 @@ const UserPage = () => {
                                 <td>{land.conventional ? "Yes" : "No"}</td>
                                 <td>{land.pincode}</td>
                                 <td>
-                                    <button onClick={() => submitTransferRequest(land)}>Transfer Request</button>
+                                    <button className="action-button" onClick={() => submitTransferRequest(land)}>Transfer Request</button>
                                     {land.conventional ? (
-                                        <span>Already Conventioned</span>
+                                        <span className="status-text">Already Conventioned</span>
                                     ) : (
-                                        <button onClick={() => submitConventionalRequest(land)}>Conventional Request</button>
+                                        <button className="action-button" onClick={() => submitConventionalRequest(land)}>Conventional Request</button>
                                     )}
                                     {isLandForSale(land.SurveyNo, land.HissNo) ? (
-                                        <button onClick={() => cancelLandForSale(land)}>Cancel Sale</button>
+                                        <button className="action-button" onClick={() => cancelLandForSale(land)}>Cancel Sale</button>
                                     ) : (
                                         <>
-                                            <button onClick={() => setSellingLandId(land.land_id)}>Want to Sell Your Land</button>
+                                            <button className="action-button" onClick={() => setSellingLandId(land.land_id)}>Want to Sell Your Land</button>
                                             {sellingLandId === land.land_id && (
-                                                <div>
+                                                <div className="sale-input">
                                                     <input
                                                         type="number"
                                                         placeholder="Enter Selling Price"
@@ -197,7 +198,7 @@ const UserPage = () => {
                                                         onChange={(e) => setSalePrice(e.target.value)}
                                                         required
                                                     />
-                                                    <button onClick={() => submitLandForSale(land)}>Confirm Sale</button>
+                                                    <button className="action-button" onClick={() => submitLandForSale(land)}>Confirm Sale</button>
                                                 </div>
                                             )}
                                         </>

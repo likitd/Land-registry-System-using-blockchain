@@ -1,0 +1,33 @@
+/* Nav.css */
+
+.navbar {
+    background-color: #007bff; /* Bootstrap primary color */
+    padding: 10px 20px; /* Spacing inside the navbar */
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2); /* Subtle shadow */
+}
+
+.nav-list {
+    list-style-type: none; /* Remove bullet points */
+    display: flex; /* Use flexbox for horizontal layout */
+    justify-content: space-around; /* Evenly space the items */
+    margin: 0; /* Remove default margin */
+    padding: 0; /* Remove default padding */
+}
+
+.nav-list li {
+    margin: 0 15px; /* Space between list items */
+}
+
+.nav-list a {
+    color: white; /* Text color */
+    text-decoration: none; /* Remove underline */
+    font-weight: bold; /* Bold text */
+    padding: 8px 12px; /* Add some padding */
+    border-radius: 5px; /* Rounded corners */
+    transition: background-color 0.3s; /* Smooth background transition */
+}
+
+.nav-list a:hover {
+    background-color: rgba(255, 255, 255, 0.2); /* Change background on hover */
+    color: #fff; /* Maintain text color on hover */
+}

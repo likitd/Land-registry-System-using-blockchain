@@ -1,32 +1,30 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { useNavigate } from 'react-router-dom';
+import './Nav.css';
 
-
-
-const Nav=()=>{
-   
+const Nav = ({ isLoggedIn }) => {
     return (
-        <div>
-            <ul className= 'Nav-ul'>
-                <li><Link to='/'>profile</Link></li>
-                <li><Link to='/signin'> signin</Link></li>  
-                <li><Link to='/userpage'>userpage</Link></li>
-                <li><Link to='/make_convention'>make_convention</Link></li>
-                <li><Link to='/make_transfer'>make_transfer</Link></li>
-                <li><Link to='/landofficer'>land officer</Link></li>
-                <li><Link to='/landforsale'>land_for_sale</Link></li>
-                <li><Link to='/login'>login</Link></li>
-                <li><Link to='/logout'>logout</Link></li>
-                </ul>
-               
-            
-        
-     
-           
-       
-           
-        </div>
-    )
+        <nav className="navbar">
+            <ul className="nav-list">
+                {!isLoggedIn ? (
+                    <>
+                        <li><Link to="/login">Login</Link></li>
+                        <li><Link to="/signin">Sign Up</Link></li>
+                    </>
+                ) : (
+                    <>
+                        <li><Link to="/">Profile</Link></li>
+                        <li><Link to="/userpage">User Page</Link></li>
+                        <li><Link to="/make_convention">Make Convention</Link></li>
+                        <li><Link to="/make_transfer">Make Transfer</Link></li>
+                        {/* <li><Link to="/landofficer">Land Officer</Link></li> */} {/* Removed Land Officer */}
+                        <li><Link to="/landforsale">Land for Sale</Link></li>
+                        <li><Link to="/logout">Logout</Link></li>
+                    </>
+                )}
+            </ul>
+        </nav>
+    );
 };
+
 export default Nav;

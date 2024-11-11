@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
+import './LandForSale.css'; // Import the CSS file for styling
 
 const LandForSale = () => {
     const [landsForSale, setLandsForSale] = useState([]);
@@ -18,10 +19,10 @@ const LandForSale = () => {
     };
 
     return (
-        <div>
+        <div className="land-sale-container">
             <h2>Lands Available for Sale</h2>
             {landsForSale.length > 0 ? (
-                <table>
+                <table className="land-sale-table">
                     <thead>
                         <tr>
                             <th>Survey No</th>
@@ -31,7 +32,7 @@ const LandForSale = () => {
                             <th>Pincode</th>
                             <th>Owner Name</th>
                             <th>Email</th>
-                            <th>Price</th>
+                            <th>Price (USD)</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -44,7 +45,7 @@ const LandForSale = () => {
                                 <td>{land.pincode}</td>
                                 <td>{land.name}</td>
                                 <td>
-                                    <a href={`mailto:${land.email}`}>{land.email}</a>
+                                    <a href={`mailto:${land.email}`} className="email-link">{land.email}</a>
                                 </td>
                                 <td>{land.price}</td>
                             </tr>
@@ -52,7 +53,7 @@ const LandForSale = () => {
                     </tbody>
                 </table>
             ) : (
-                <p>No lands available for sale currently.</p>
+                <p className="no-lands-message">No lands available for sale currently.</p>
             )}
         </div>
     );

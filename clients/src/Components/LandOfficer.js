@@ -1,12 +1,12 @@
 // LandOfficer.js
-import React, { useState,useEffect} from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ethers } from 'ethers';
-import contractabi from './utils/Land.json'
+import contractabi from './utils/Land.json';
+import './LandOfficer.css'; // Add a CSS file for styling
 
-
-const contractABI = contractabi.abi // Add your contract ABI here
-const contractAddress = "0x81176a09B1fA497Eea08D295DA56139B17Df9a5F"; // Add your deployed contract address here
+const contractABI = contractabi.abi;
+const contractAddress = "0x81176a09B1fA497Eea08D295DA56139B17Df9a5F";
 
 const LandOfficer = () => {
   const [formData, setFormData] = useState({
@@ -17,14 +17,12 @@ const LandOfficer = () => {
     conventional: false,
     pincode: ''
   });
-
-  useEffect(()=>{
-    requestAccount();
-  });
-
   const navigate = useNavigate();
 
-  // Handle input changes
+  useEffect(() => {
+    requestAccount();
+  }, []);
+
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
     setFormData({
@@ -33,11 +31,9 @@ const LandOfficer = () => {
     });
   };
 
-  // Function to initialize MetaMask and connect to the blockchain
   const requestAccount = async () => {
     if (window.ethereum) {
       try {
-        // Request account access
         await window.ethereum.request({ method: 'eth_requestAccounts' });
       } catch (error) {
         console.error("User denied MetaMask access");
@@ -47,47 +43,19 @@ const LandOfficer = () => {
     }
   };
 
-  // // Function to get the smart contract with a signer
-  // const getContractWithSigner = async () => {
-  //   // Request MetaMask account access
-  //  // await requestAccount();
-
-  //   // Ensure provider is connected to MetaMask
-  //   const provider = new ethers.BrowserProvider(window.ethereum);
-    
-  //   // Get signer from provider
-  //   const signer = provider.getSigner();
-    
-  //   // Return contract instance connected with the signer
-  //   return new ethers.Contract(contractAddress, contractABI, signer);
-  // };
-
-  // Function to add land to the blockchain
   const addLand = async () => {
     if (!window.ethereum) {
       alert("Please install MetaMask");
       return;
     }
-    const {ethereum}=window;
-    const provider=new ethers.BrowserProvider(ethereum);
-    const signer= await provider.getSigner();
-    const contractInstance=new ethers.Contract(
-      contractAddress,
-      contractABI,
-      signer
-      );
+    const { ethereum } = window;
+    const provider = new ethers.BrowserProvider(ethereum);
+    const signer = await provider.getSigner();
+    const contractInstance = new ethers.Contract(contractAddress, contractABI, signer);
     const { owner_adhar, SurveyNo, HissNo, area, conventional, pincode } = formData;
-    
+
     try {
-      const status=await  contractInstance.add_land(
-        SurveyNo,
-        HissNo,
-        area,
-        conventional,
-        pincode,
-        owner_adhar
-      );
-     
+      await contractInstance.add_land(SurveyNo, HissNo, area, conventional, pincode, owner_adhar);
       alert("Land added successfully to the blockchain!");
     } catch (error) {
       console.error("Error adding land to the blockchain:", error);
@@ -95,18 +63,17 @@ const LandOfficer = () => {
     }
   };
 
-  // Handle form submission
   const handleSubmit = (e) => {
     e.preventDefault();
-    addLand(); // Call the addLand function when form is submitted
+    addLand();
   };
 
   return (
-    <div style={{ padding: "20px" }}>
-      <h2>Add New Land</h2>
-      <form onSubmit={handleSubmit}>
-        <div>
-          <label>Owner Adhar:</label>
+    <div className="land-officer-container">
+      <h2 className="form-title">Add New Land</h2>
+      <form onSubmit={handleSubmit} className="land-officer-form">
+        <div className="form-group">
+          <label>Owner Aadhaar:</label>
           <input
             type="number"
             name="owner_adhar"
@@ -115,7 +82,7 @@ const LandOfficer = () => {
             required
           />
         </div>
-        <div>
+        <div className="form-group">
           <label>Survey Number:</label>
           <input
             type="number"
@@ -125,7 +92,7 @@ const LandOfficer = () => {
             required
           />
         </div>
-        <div>
+        <div className="form-group">
           <label>Hiss Number:</label>
           <input
             type="text"
@@ -135,7 +102,7 @@ const LandOfficer = () => {
             required
           />
         </div>
-        <div>
+        <div className="form-group">
           <label>Area:</label>
           <input
             type="number"
@@ -145,7 +112,7 @@ const LandOfficer = () => {
             required
           />
         </div>
-        <div>
+        <div className="form-group checkbox-group">
           <label>Conventional:</label>
           <input
             type="checkbox"
@@ -154,7 +121,7 @@ const LandOfficer = () => {
             onChange={handleChange}
           />
         </div>
-        <div>
+        <div className="form-group">
           <label>Pincode:</label>
           <input
             type="number"
@@ -164,12 +131,12 @@ const LandOfficer = () => {
             required
           />
         </div>
-        <button type="submit">Submit</button>
+        <button type="submit" className="submit-button">Submit</button>
       </form>
 
-      <div style={{ marginTop: "20px" }}>
-        <button onClick={() => navigate('/make_convention')}>Go to Make Convention</button>
-        <button onClick={() => navigate('/make_transfer')}>Go to Make Transfer</button>
+      <div className="navigation-buttons">
+        <button onClick={() => navigate('/make_convention')} className="nav-button">Go to Make Convention</button>
+        <button onClick={() => navigate('/make_transfer')} className="nav-button">Go to Make Transfer</button>
       </div>
     </div>
   );

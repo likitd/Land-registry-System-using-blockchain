@@ -1,21 +1,25 @@
-// Logout.js
 import React, { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import './Logout.css';
 
-const Logout = () => {
+const Logout = ({ setIsLoggedIn }) => {
     const navigate = useNavigate();
 
     useEffect(() => {
-        // Clear local storage and any user-related state
-        localStorage.clear();
-        
-        // Redirect to login page
-        navigate('/login');
-    }, [navigate]);
+        // Clear user data from local storage and reset login state
+        localStorage.removeItem('user');
+        setIsLoggedIn(false);
+
+        // Redirect to login page after a short delay
+        setTimeout(() => {
+            navigate('/login');
+        }, 2000); // 2-second delay for a smoother experience
+    }, [navigate, setIsLoggedIn]);
 
     return (
-        <div>
-            <h2>Logging out...</h2>
+        <div className="logout-container">
+            <h2 className="logout-message">Logging out...</h2>
+            <div className="spinner"></div>
         </div>
     );
 };

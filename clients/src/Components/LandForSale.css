@@ -1,0 +1,58 @@
+/* LandForSale.css */
+
+.land-sale-container {
+    padding: 20px;
+    max-width: 900px;
+    margin: 0 auto;
+    text-align: center;
+    background-color: #f9f9f9;
+    border-radius: 8px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+h2 {
+    font-size: 2em;
+    color: #333;
+    margin-bottom: 20px;
+}
+
+.land-sale-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 10px;
+}
+
+.land-sale-table th, .land-sale-table td {
+    padding: 12px;
+    border: 1px solid #ddd;
+    text-align: left;
+}
+
+.land-sale-table th {
+    background-color: #007bff;
+    color: #fff;
+    font-weight: bold;
+}
+
+.land-sale-table tr:nth-child(even) {
+    background-color: #f2f2f2;
+}
+
+.land-sale-table td {
+    color: #555;
+}
+
+.email-link {
+    color: #007bff;
+    text-decoration: none;
+}
+
+.email-link:hover {
+    text-decoration: underline;
+}
+
+.no-lands-message {
+    font-size: 1.2em;
+    color: #777;
+    margin-top: 20px;
+}

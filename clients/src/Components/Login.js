@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import './Login.css';
 
-const Login = () => {
+const Login = ({ setIsLoggedIn }) => {
     const [loginData, setLoginData] = useState({
         adhar_no: '',
         password: ''
@@ -27,7 +28,8 @@ const Login = () => {
             if (response.ok) {
                 console.log('Login successful:', data);
                 localStorage.setItem('user', JSON.stringify(data.user));
-                navigate('/userpage'); // Redirect to user page on successful login
+                setIsLoggedIn(true); // Update login status
+                navigate('/userpage'); // Redirect to user page
             } else {
                 alert(data.message || 'Login failed');
                 navigate('/signin'); // Redirect to signup page if login fails
@@ -39,27 +41,31 @@ const Login = () => {
     };
 
     return (
-        <div>
-            <h2>Login</h2>
-            <form onSubmit={handleSubmit}>
-                <input
-                    type="number"
-                    name="adhar_no"
-                    placeholder="Aadhaar Number"
-                    value={loginData.adhar_no}
-                    onChange={handleChange}
-                    required
-                />
-                <input
-                    type="password"
-                    name="password"
-                    placeholder="Password"
-                    value={loginData.password}
-                    onChange={handleChange}
-                    required
-                />
-                <button type="submit">Login</button>
-            </form>
+        <div className="login-container">
+            <div className="login-form">
+                <h2>Login</h2>
+                <form onSubmit={handleSubmit}>
+                    <input
+                        type="number"
+                        name="adhar_no"
+                        placeholder="Aadhaar Number"
+                        value={loginData.adhar_no}
+                        onChange={handleChange}
+                        required
+                        className="login-input"
+                    />
+                    <input
+                        type="password"
+                        name="password"
+                        placeholder="Password"
+                        value={loginData.password}
+                        onChange={handleChange}
+                        required
+                        className="login-input"
+                    />
+                    <button type="submit" className="login-button">Login</button>
+                </form>
+            </div>
         </div>
     );
 };
